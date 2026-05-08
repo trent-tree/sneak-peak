@@ -1,47 +1,47 @@
+import React, { useState } from "react";
 import {
+  Badge,
   Box,
+  Button,
   Container,
   Heading,
+  HStack,
+  Input,
   Text,
   VStack,
-  Input,
-  Button,
-  HStack,
-  Avatar,
-  Badge,
 } from "@chakra-ui/react";
+import tweetsData from "./data/tweets.json"
+import type { Tweet } from "./types/Tweet"
+
 
 function App() {
+  // tweets is the current list of tweets on the page
+  // setTweets is how react updates the list of tweets
+  // We start with tweets from the JSON file
+  const [tweets, setTweets] = useState<Tweet[]>(tweetsData as Tweet[])
 
-    const tweets = [
-  {
-    "name": "Maya Johnson",
-    "username": "@maya_codes",
-    "createdAt": "2026-05-03T09:58:00.000Z",
-    "text": "Just got my first React page running. Components are starting to make sense.",
-    "likes": 14,
-    "replies": 3,
-    "tag": "Web Dev"
-  },
-  {
-    "name": "Ethan Brooks",
-    "username": "@ethanbuilds",
-    "createdAt": "2026-05-02T09:48:00.000Z",
-    "text": "Hardcoding data first helps me focus on the page layout before adding real input.",
-    "likes": 22,
-    "replies": 5,
-    "tag": "React"
-  },
-  {
-    "name": "Ava Smith",
-    "username": "@ava_secure",
-    "createdAt": "2026-05-01T09:35:00.000Z",
-    "text": "A .map() lets us turn an array of data into repeated cards on the screen.",
-    "likes": 31,
-    "replies": 8,
-    "tag": "Cyber 301"
-  }
-];
+  //input is what is currently typed in the box
+  // setInput is how we hook into it
+  const [input, setInput] = useState("")
+
+  const handleYap = () => {
+    // if input is empty, stop the function
+      if(!input.trim()) return;
+      const newTweet: Tweet = {
+        id: Date.now(),
+        name: "JoeSmoe",
+        username: "@you",
+        createdAt: new Date().toISOString(),
+        text: input.trim(),
+        likes: 0,
+        replies: 0,
+        tag: "",
+      }
+      // Put new tweet first, then copy all old tweets
+      setTweets([newTweet, ...tweets]);
+      // clear the input box after posting
+      setInput("");
+  };
 
   // Save the current time once during this render.
   const currentTime = new Date().toISOString();
@@ -60,16 +60,17 @@ function App() {
     return `${day}d`;
   };
 
+
   return (
-    <Box bg="green.800" minH="100vh" py={8}>
+    <Box bg="gray.900" minH="100vh" py={8}>
       <Container maxW="650px">
         <VStack gap={5} align="stretch">
           <Box bg="gray.800" p={6} borderRadius="2xl" boxShadow="md">
-            <Heading size="lg" color="white">]\\[]\[][``]
-              Sneak-Peak
+            <Heading size="lg" color="white">
+              TestName
             </Heading>
             <Text color="gray.400" mt={2}>
-              A simple Twitter clone built with Vite and Chakra UI.
+              A simple Twitter-style homepage built with React and Chakra UI.
             </Text>
           </Box>
 
@@ -83,16 +84,22 @@ function App() {
                 bg="gray.700"
                 borderColor="gray.600"
                 color="white"
+                value={input}
+                // Every time user types, we update input
+                onChange={(e) => setInput(e.target.value)}
               />
-              <Button colorScheme="twitter" alignSelf="flex-end">
+              <Button alignSelf="flex-end" bg="blue.500" color="white"
+                 onClick={handleYap}
+              >
+           
                 Yap
               </Button>
             </VStack>
           </Box>
-
-          {tweets.map((tweet, index) => (
+          {/* Run javascript code inside html */}
+          {tweets.map((tweet) => (
             <Box
-              key={index}
+              key={tweet.username}
               bg="gray.800"
               p={5}
               borderRadius="2xl"
@@ -100,35 +107,29 @@ function App() {
               border="1px solid"
               borderColor="gray.700"
             >
-              <HStack align="start" gap={4}>
-                <Avatar.Root>
-                  <Avatar.Fallback name={tweet.name} />
-                </Avatar.Root>
-
-                <VStack align="stretch" gap={2} flex="1">
-                  <HStack justify="space-between">
-                    <Box>
-                      <HStack>
-                        <Text fontWeight="bold" color="white">
-                          {tweet.name}
-                        </Text>
-                        <Badge colorScheme="twitter">{tweet.tag}</Badge>
-                      </HStack>
-                      <Text color="gray.400" fontSize="sm">
-                        {tweet.username} · {timeAgo(tweet.createdAt)}
+              <VStack align="stretch" gap={3}>
+                <HStack justify="space-between" align="start">
+                  <Box>
+                    <HStack>
+                      <Text fontWeight="bold" color="white">
+                        {tweet.name}
                       </Text>
-                    </Box>
-                  </HStack>
+                      <Badge colorPalette="blue">{tweet.tag}</Badge>
+                    </HStack>
+                    <Text color="gray.400" fontSize="sm">
+                      {tweet.username} · {timeAgo(tweet.createdAt)}
+                    </Text>
+                  </Box>
+                </HStack>
 
-                  <Text color="white">{tweet.text}</Text>
+                <Text color="white">{tweet.text}</Text>
 
-                  <HStack gap={6} color="gray.400" fontSize="sm" pt={2}>
-                    <Text>💬 {tweet.replies}</Text>
-                    <Text>❤️ {tweet.likes}</Text>
-                    <Text>🔁 Share</Text>
-                  </HStack>
-                </VStack>
-              </HStack>
+                <HStack gap={6} color="gray.400" fontSize="sm">
+                  <Text>💬 {tweet.replies}</Text>
+                  <Text>❤️ {tweet.likes}</Text>
+                  <Text>🔁 Share</Text>
+                </HStack>
+              </VStack>
             </Box>
           ))}
         </VStack>
